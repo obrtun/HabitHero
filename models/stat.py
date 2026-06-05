@@ -1,8 +1,8 @@
 class Stat:
-    def __init__(self, name, value = 10, progress = 0):
+    def __init__(self, name):
         self.name = name
-        self.value = value
-        self.progress = progress
+        self.value = 10
+        self.progress = 0
 
     def add_progress(self, amount):
         self.progress += amount
@@ -10,3 +10,19 @@ class Stat:
         while self.progress >= 100:
             self.progress -= 100
             self.value += 1
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "value": self.value,
+            "progress": self.progress
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        stat = cls(data["name"])
+
+        stat.value = data["value"]
+        stat.progress = data["progress"]
+
+        return stat

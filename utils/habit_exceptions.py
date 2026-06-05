@@ -1,0 +1,2 @@
+class InvalidHabitNameError(Exception):
+    pass
