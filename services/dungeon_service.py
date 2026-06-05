@@ -20,6 +20,16 @@ class DungeonService:
             name, hp, attack, coin_reward = random.choice(enemies)
             yield Enemy(name, hp, attack, coin_reward)
 
+    def generate_event(self):
+        events = [
+            "combat",
+            "combat",
+            "merchant",
+            "empty"
+        ]
+
+        return random.choice(events)
+
     def create_enemy(self):
         return next(self.enemy_generator)
 
@@ -29,9 +39,7 @@ class DungeonService:
 
         damage = physique
 
-        critical_chance = creativity
-
-        if random.randint(1, 100) <= critical_chance:
+        if random.randint(1, 100) <= creativity:
             damage *= 2
 
         return damage
@@ -46,9 +54,7 @@ class DungeonService:
 
         damage = physique + education
 
-        critical_chance = creativity
-
-        if random.randint(1, 100) <= critical_chance:
+        if random.randint(1, 100) <= creativity:
             damage *= 2
 
         return damage

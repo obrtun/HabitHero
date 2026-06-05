@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PyCharm
+.idea/
+
+# Project data generated at runtime
+data/save.json
+data/habit_history.log

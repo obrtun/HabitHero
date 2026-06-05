@@ -4,7 +4,7 @@
         "stats": {
             "physique": {
                 "name": "Physique",
-                "value": 11,
+                "value": 12,
                 "progress": 20
             },
             "education": {
@@ -30,6 +30,18 @@
         }
     },
     "habits": [
+        {
+            "name": "вывыв",
+            "stat_key": "physique",
+            "reward": 20,
+            "last_completed_date": "2026-06-05"
+        },
+        {
+            "name": "ывф",
+            "stat_key": "physique",
+            "reward": 20,
+            "last_completed_date": "2026-06-05"
+        },
         {
             "name": "выв",
             "stat_key": "physique",
