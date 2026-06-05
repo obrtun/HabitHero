@@ -4,7 +4,8 @@ from models.stat import Stat
 class Player:
     def __init__(self, name):
         self.name = name
-
+        self.max_hp = 100
+        self.current_hp = self.max_hp
         self.stats = {
             "physique": Stat("Physique"),
             "education": Stat("Education"),
@@ -24,6 +25,18 @@ class Player:
                 for key, stat in self.stats.items()
             }
         }
+
+    def take_damage(self, damage):
+        self.current_hp -= damage
+
+        if self.current_hp < 0:
+            self.current_hp = 0
+
+    def is_alive(self):
+        return self.current_hp > 0
+
+    def restore_hp(self):
+        self.current_hp = self.max_hp
 
     @classmethod
     def from_dict(cls, data):

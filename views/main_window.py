@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox
 from utils.validators import validate_habit_name
 
 from models.habit import Habit
+from services.dungeon_service import DungeonService
+from views.dungeon_window import DungeonWindow
 
 
 class MainWindow:
@@ -57,8 +59,10 @@ class MainWindow:
 
         self.dungeon_button = tk.Button(
             self.bottom_frame,
-            text="Enter Dungeon"
+            text="Enter Dungeon",
+            command=self.open_dungeon_window
         )
+
         self.dungeon_button.pack()
 
         self.status_label = tk.Label(
@@ -67,6 +71,10 @@ class MainWindow:
             font=("Arial", 11)
         )
         self.status_label.pack(pady=5)
+
+    def open_dungeon_window(self):
+        dungeon_service = DungeonService()
+        DungeonWindow(self.root, self.player, dungeon_service)
 
     def create_stats_panel(self):
         self.stat_labels = {}

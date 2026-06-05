@@ -21,6 +21,6 @@ class Habit:
             data["reward"]
         )
 
-        habit.last_completed_date = data["last_completed_date"]
+        habit.last_completed_date = data.get("last_completed_date")
 
         return habit
