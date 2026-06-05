@@ -4,13 +4,13 @@
         "stats": {
             "physique": {
                 "name": "Physique",
-                "value": 10,
-                "progress": 60
+                "value": 11,
+                "progress": 20
             },
             "education": {
                 "name": "Education",
                 "value": 10,
-                "progress": 0
+                "progress": 20
             },
             "sociality": {
                 "name": "Sociality",
@@ -31,7 +31,7 @@
     },
     "habits": [
         {
-            "name": "фывфы",
+            "name": "выв",
             "stat_key": "physique",
             "reward": 20,
             "last_completed_date": "2026-06-05"

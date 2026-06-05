@@ -1,5 +1,5 @@
 from datetime import date
-
+from utils.decorators import log_habit_completion
 
 class HabitService:
     def __init__(self):
@@ -30,6 +30,7 @@ class HabitService:
         today = str(date.today())
         return habit.last_completed_date == today
 
+    @log_habit_completion
     def complete_habit(self, player, habit):
         if self.is_completed_today(habit):
             return

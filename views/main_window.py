@@ -1,10 +1,13 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from utils.validators import validate_habit_name
+
 
 from models.habit import Habit
 from services.dungeon_service import DungeonService
 from views.dungeon_window import DungeonWindow
+
+from exceptions.habit_exceptions import InvalidHabitNameError
+from utils.validators import validate_habit_name
 
 
 class MainWindow:
@@ -261,10 +264,12 @@ class MainWindow:
             difficulty = difficulty_var.get()
             reward = difficulty_rewards[difficulty]
 
-            if not validate_habit_name(name):
+            try:
+                validate_habit_name(name)
+            except InvalidHabitNameError as error:
                 messagebox.showwarning(
                     "Invalid habit name",
-                    "Habit name must be 2-30 characters long and contain only letters, numbers and spaces."
+                    str(error)
                 )
                 return
 
