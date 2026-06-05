@@ -21,3 +21,4 @@ for habit in habits:
 
 window = MainWindow(player, habit_service, save_service)
 window.run()
+
