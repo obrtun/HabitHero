@@ -10,19 +10,14 @@ class SaveService:
         self.file_path = file_path
 
     def save(self, player, habits):
-        data = {
-            "player": player.to_dict(),
-            "habits": [
-                habit.to_dict()
-                for habit in habits
-            ]
-        }
-
         os.makedirs("data", exist_ok=True)
 
         with open(self.file_path, "w", encoding="utf-8") as file:
             json.dump(
-                data,
+                {
+                    "player": player.to_dict(),
+                    "habits": [habit.to_dict() for habit in habits]
+                },
                 file,
                 indent=4,
                 ensure_ascii=False
@@ -35,11 +30,7 @@ class SaveService:
         with open(self.file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
 
-        player = Player.from_dict(data["player"])
-
-        habits = [
-            Habit.from_dict(habit_data)
-            for habit_data in data["habits"]
-        ]
-
-        return player, habits
+        return (
+            Player.from_dict(data["player"]),
+            [Habit.from_dict(habit) for habit in data["habits"]]
+        )

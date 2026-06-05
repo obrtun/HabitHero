@@ -1,5 +1,8 @@
 import tkinter as tk
 
+from services.fight_service import FightService
+from services.merchant_service import MerchantService
+
 
 class DungeonWindow:
     def __init__(self, root, player, dungeon_service):
@@ -10,13 +13,16 @@ class DungeonWindow:
 
         self.player.restore_combat_resources()
 
+        self.fight_service = FightService(player, dungeon_service)
+        self.merchant_service = MerchantService(player)
+
         self.window = tk.Toplevel(self.root)
         self.window.title("Dungeon")
         self.window.geometry("520x450")
         self.window.resizable(False, False)
 
         self.create_widgets()
-        self.show_exploration()
+        self.next_room()
 
     def create_widgets(self):
         tk.Label(
@@ -32,12 +38,12 @@ class DungeonWindow:
         )
         self.player_label.pack(pady=5)
 
-        self.enemy_label = tk.Label(
+        self.event_label = tk.Label(
             self.window,
             text="",
             font=("Arial", 14)
         )
-        self.enemy_label.pack(pady=10)
+        self.event_label.pack(pady=10)
 
         self.status_label = tk.Label(
             self.window,
@@ -50,32 +56,20 @@ class DungeonWindow:
         self.buttons_frame = tk.Frame(self.window)
         self.buttons_frame.pack(pady=10)
 
-        self.attack_button = tk.Button(
-            self.buttons_frame,
-            text="Attack",
-            width=14
-        )
-        self.attack_button.pack(side="left", padx=5)
+        self.first_button = tk.Button(self.buttons_frame, width=14)
+        self.first_button.pack(side="left", padx=5)
 
-        self.special_attack_button = tk.Button(
-            self.buttons_frame,
-            text="Special Attack",
-            width=14
-        )
-        self.special_attack_button.pack(side="left", padx=5)
+        self.second_button = tk.Button(self.buttons_frame, width=14)
+        self.second_button.pack(side="left", padx=5)
 
-        self.run_button = tk.Button(
-            self.buttons_frame,
-            text="Run",
-            width=14
-        )
-        self.run_button.pack(side="left", padx=5)
+        self.third_button = tk.Button(self.buttons_frame, width=14)
+        self.third_button.pack(side="left", padx=5)
 
         self.next_room_button = tk.Button(
             self.window,
-            text="Explore",
+            text="Next Room",
             width=14,
-            command=self.explore
+            command=self.next_room
         )
         self.next_room_button.pack(pady=5)
 
@@ -90,96 +84,48 @@ class DungeonWindow:
         )
 
         if self.enemy:
-            self.enemy_label.config(
+            self.event_label.config(
                 text=f"{self.enemy.name}\nHP: {self.enemy.hp}"
             )
-        else:
-            self.enemy_label.config(text="")
 
-    def show_exploration(self):
-        self.enemy = None
-
-        self.enemy_label.config(text="Exploration")
-        self.status_label.config(
-            text="You are walking through the dungeon..."
-        )
-
-        self.attack_button.config(
-            text="Attack",
-            state="disabled"
-        )
-        self.special_attack_button.config(
-            text="Special Attack",
-            state="disabled"
-        )
-        self.run_button.config(
-            text="Run",
-            state="disabled"
-        )
-
-        self.next_room_button.config(
-            text="Explore",
+    def set_action_buttons(self, first, second, third):
+        self.first_button.config(
+            text=first[0],
             state="normal",
-            command=self.explore
+            command=first[1]
         )
 
-        self.update_info()
+        self.second_button.config(
+            text=second[0],
+            state="normal",
+            command=second[1]
+        )
 
-    def explore(self):
+        self.third_button.config(
+            text=third[0],
+            state="normal",
+            command=third[1]
+        )
+
+    def next_room(self):
         event = self.dungeon_service.generate_event()
 
         if event == "combat":
             self.start_combat()
-        elif event == "merchant":
-            self.show_merchant()
         else:
-            self.show_empty_room()
-
-    def show_empty_room(self):
-        self.enemy = None
-
-        self.enemy_label.config(text="Empty Room")
-        self.status_label.config(
-            text="This room is empty. You take a short breath and move on."
-        )
-
-        self.attack_button.config(state="disabled")
-        self.special_attack_button.config(state="disabled")
-        self.run_button.config(state="disabled")
-
-        self.next_room_button.config(
-            text="Continue",
-            state="normal",
-            command=self.show_exploration
-        )
-
-        self.update_info()
+            self.show_merchant()
 
     def start_combat(self):
         self.enemy = self.dungeon_service.create_enemy()
 
-        self.enemy_label.config(
-            text=f"{self.enemy.name}\nHP: {self.enemy.hp}"
-        )
-
         self.status_label.config(
-            text=f"You enter a room. {self.enemy.name} appears!"
+            text=f"{self.enemy.name} appears!"
         )
 
-        self.attack_button.config(
-            text="Attack",
-            state="normal",
-            command=self.attack_enemy
-        )
-        self.special_attack_button.config(
-            text="Special Attack",
-            state="normal",
-            command=self.special_attack
-        )
-        self.run_button.config(
-            text="Run",
-            state="normal",
-            command=self.run_away
+        self.set_action_buttons(
+            ("Attack", self.attack_enemy),
+            ("Special Attack", self.special_attack),
+            ("Run", self.run_away)
         )
 
         self.next_room_button.config(state="disabled")
@@ -189,77 +135,57 @@ class DungeonWindow:
     def show_merchant(self):
         self.enemy = None
 
-        self.enemy_label.config(text="Merchant")
+        self.event_label.config(text="Merchant")
         self.status_label.config(
             text="A merchant offers you supplies."
         )
 
-        self.attack_button.config(
-            text="Buy Heal (1)",
-            state="normal",
-            command=self.buy_heal
-        )
-        self.special_attack_button.config(
-            text="Buy Damage (2)",
-            state="normal",
-            command=self.buy_damage_bonus
-        )
-        self.run_button.config(
-            text="Leave",
-            state="normal",
-            command=self.show_exploration
+        self.set_action_buttons(
+            ("Buy Heal (1)", self.buy_heal),
+            ("Buy Damage (2)", self.buy_damage_bonus),
+            ("Leave", self.next_room)
         )
 
         self.next_room_button.config(
-            text="Continue",
+            text="Next Room",
             state="normal",
-            command=self.show_exploration
+            command=self.next_room
         )
 
         self.update_info()
 
     def buy_heal(self):
-        if not self.player.spend_gold(1):
+        if not self.merchant_service.buy_heal():
             self.status_label.config(text="Not enough coins.")
             return
 
-        self.player.heal(30)
         self.update_info()
         self.status_label.config(text="You bought healing. +30 HP.")
 
     def buy_damage_bonus(self):
-        if not self.player.spend_gold(2):
+        if not self.merchant_service.buy_damage_bonus():
             self.status_label.config(text="Not enough coins.")
             return
 
-        self.player.add_damage_bonus(5)
         self.update_info()
         self.status_label.config(text="You bought damage bonus. +5 damage.")
 
     def enemy_turn(self):
-        enemy_damage = self.dungeon_service.calculate_enemy_damage(
-            self.player,
-            self.enemy
-        )
-
-        self.player.take_damage(enemy_damage)
+        enemy_damage = self.fight_service.enemy_attack(self.enemy)
 
         if not self.player.is_alive():
             self.update_info()
             self.status_label.config(
                 text=f"{self.enemy.name} dealt {enemy_damage} damage. You were defeated!"
             )
-            self.disable_combat_buttons()
+            self.disable_action_buttons()
             self.next_room_button.config(state="disabled")
             return False
 
         return enemy_damage
 
     def attack_enemy(self):
-        damage = self.dungeon_service.calculate_attack_damage(self.player)
-        damage += self.player.damage_bonus
-
-        self.enemy.take_damage(damage)
+        damage = self.fight_service.attack(self.enemy)
 
         if not self.enemy.is_alive():
             self.handle_victory(damage)
@@ -274,18 +200,13 @@ class DungeonWindow:
             )
 
     def special_attack(self):
-        damage = self.dungeon_service.calculate_special_attack_damage(
-            self.player
-        )
+        damage = self.fight_service.special_attack(self.enemy)
 
         if damage is None:
             self.status_label.config(
                 text="Not enough mana for special attack."
             )
             return
-
-        damage += self.player.damage_bonus
-        self.enemy.take_damage(damage)
 
         if not self.enemy.is_alive():
             self.handle_victory(damage)
@@ -300,16 +221,13 @@ class DungeonWindow:
             )
 
     def run_away(self):
-        if self.dungeon_service.try_escape(self.player):
+        if self.fight_service.try_escape():
             self.status_label.config(
                 text="You successfully escaped from combat."
             )
-            self.disable_combat_buttons()
-            self.next_room_button.config(
-                text="Continue",
-                state="normal",
-                command=self.show_exploration
-            )
+
+            self.disable_action_buttons()
+            self.next_room_button.config(state="normal")
             return
 
         enemy_damage = self.enemy_turn()
@@ -321,7 +239,8 @@ class DungeonWindow:
             )
 
     def handle_victory(self, damage):
-        self.player.add_gold(self.enemy.coin_reward)
+        self.fight_service.victory(self.enemy)
+
         self.update_info()
 
         self.status_label.config(
@@ -332,14 +251,10 @@ class DungeonWindow:
             )
         )
 
-        self.disable_combat_buttons()
-        self.next_room_button.config(
-            text="Continue",
-            state="normal",
-            command=self.show_exploration
-        )
+        self.disable_action_buttons()
+        self.next_room_button.config(state="normal")
 
-    def disable_combat_buttons(self):
-        self.attack_button.config(state="disabled")
-        self.special_attack_button.config(state="disabled")
-        self.run_button.config(state="disabled")
+    def disable_action_buttons(self):
+        self.first_button.config(state="disabled")
+        self.second_button.config(state="disabled")
+        self.third_button.config(state="disabled")

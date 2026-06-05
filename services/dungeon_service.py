@@ -21,57 +21,47 @@ class DungeonService:
             yield Enemy(name, hp, attack, coin_reward)
 
     def generate_event(self):
-        events = [
+        return random.choice([
             "combat",
             "combat",
-            "merchant",
-            "empty"
-        ]
-
-        return random.choice(events)
+            "combat",
+            "merchant"
+        ])
 
     def create_enemy(self):
         return next(self.enemy_generator)
 
     def calculate_attack_damage(self, player):
-        physique = player.get_stat("physique").value
-        creativity = player.get_stat("creativity").value
+        damage = player.get_stat("physique").value
+        critical_chance = player.get_stat("creativity").value
 
-        damage = physique
-
-        if random.randint(1, 100) <= creativity:
+        if random.randint(1, 100) <= critical_chance:
             damage *= 2
 
-        return damage
+        return damage + player.damage_bonus
 
     def calculate_special_attack_damage(self, player):
-        education = player.get_stat("education").value
-        physique = player.get_stat("physique").value
-        creativity = player.get_stat("creativity").value
-
         if not player.spend_mana(self.SPECIAL_ATTACK_MANA_COST):
             return None
 
-        damage = physique + education
+        damage = (
+            player.get_stat("physique").value
+            + player.get_stat("education").value
+        )
 
-        if random.randint(1, 100) <= creativity:
+        critical_chance = player.get_stat("creativity").value
+
+        if random.randint(1, 100) <= critical_chance:
             damage *= 2
 
-        return damage
+        return damage + player.damage_bonus
 
     def calculate_enemy_damage(self, player, enemy):
-        discipline = player.get_stat("discipline").value
-
-        defense = discipline // 3
+        defense = player.get_stat("discipline").value // 3
         damage = enemy.attack - defense
 
-        if damage < 1:
-            damage = 1
-
-        return damage
+        return max(damage, 1)
 
     def try_escape(self, player):
-        sociality = player.get_stat("sociality").value
-        escape_chance = sociality * 2
-
+        escape_chance = player.get_stat("sociality").value * 2
         return random.randint(1, 100) <= escape_chance

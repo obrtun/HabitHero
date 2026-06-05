@@ -1,13 +1,9 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 
-
-from models.habit import Habit
 from services.dungeon_service import DungeonService
 from views.dungeon_window import DungeonWindow
-
-from exceptions.habit_exceptions import InvalidHabitNameError
-from utils.validators import validate_habit_name
+from views.add_habit_window import AddHabitWindow
 
 
 class MainWindow:
@@ -216,81 +212,20 @@ class MainWindow:
         )
 
     def open_add_habit_window(self):
-        habit_window = tk.Toplevel(self.root)
-        habit_window.title("Add Habit")
-        habit_window.geometry("300x260")
-        habit_window.resizable(False, False)
+        AddHabitWindow(
+            self.root,
+            self.player,
+            self.habit_service,
+            self.save_service,
+            self.on_habit_created
+        )
 
-        tk.Label(habit_window, text="Habit name:").pack(pady=5)
+    def on_habit_created(self, message):
+        self.update_habit_list()
 
-        name_entry = tk.Entry(habit_window)
-        name_entry.pack(pady=5)
-
-        tk.Label(habit_window, text="Stat:").pack(pady=5)
-
-        stat_var = tk.StringVar(value="physique")
-
-        tk.OptionMenu(
-            habit_window,
-            stat_var,
-            "physique",
-            "education",
-            "sociality",
-            "discipline",
-            "creativity"
-        ).pack(pady=5)
-
-        tk.Label(habit_window, text="Difficulty:").pack(pady=5)
-
-        difficulty_rewards = {
-            "Easy": 10,
-            "Medium": 20,
-            "Hard": 35
-        }
-
-        difficulty_var = tk.StringVar(value="Medium")
-
-        tk.OptionMenu(
-            habit_window,
-            difficulty_var,
-            "Easy",
-            "Medium",
-            "Hard"
-        ).pack(pady=5)
-
-        def create_habit():
-            name = name_entry.get().strip()
-            stat_key = stat_var.get()
-            difficulty = difficulty_var.get()
-            reward = difficulty_rewards[difficulty]
-
-            try:
-                validate_habit_name(name)
-            except InvalidHabitNameError as error:
-                messagebox.showwarning(
-                    "Invalid habit name",
-                    str(error)
-                )
-                return
-
-            habit = Habit(name, stat_key, reward)
-
-            self.habit_service.add_habit(habit)
-
-            self.save_data()
-            self.update_habit_list()
-
-            self.status_label.config(
-                text=f"Habit '{name}' created! Difficulty: {difficulty}"
-            )
-
-            habit_window.destroy()
-
-        tk.Button(
-            habit_window,
-            text="Create",
-            command=create_habit
-        ).pack(pady=15)
+        self.status_label.config(
+            text=message
+        )
 
     def run(self):
         self.root.mainloop()
