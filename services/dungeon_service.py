@@ -4,14 +4,22 @@ from models.enemy import Enemy
 
 
 class DungeonService:
-    def create_enemy(self):
+    def __init__(self):
+        self.enemy_generator = self.generate_enemies()
+
+    def generate_enemies(self):
         enemies = [
-            Enemy("Goblin", 40, 8),
-            Enemy("Skeleton", 55, 10),
-            Enemy("Orc", 75, 14)
+            ("Goblin", 40, 8),
+            ("Skeleton", 55, 10),
+            ("Orc", 75, 14)
         ]
 
-        return random.choice(enemies)
+        while True:
+            name, hp, attack = random.choice(enemies)
+            yield Enemy(name, hp, attack)
+
+    def create_enemy(self):
+        return next(self.enemy_generator)
 
     def calculate_player_damage(self, player):
         physique = player.get_stat("physique").value

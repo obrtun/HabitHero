@@ -1,0 +1,40 @@
+{
+    "player": {
+        "name": "Hero",
+        "stats": {
+            "physique": {
+                "name": "Physique",
+                "value": 10,
+                "progress": 60
+            },
+            "education": {
+                "name": "Education",
+                "value": 10,
+                "progress": 0
+            },
+            "sociality": {
+                "name": "Sociality",
+                "value": 10,
+                "progress": 0
+            },
+            "discipline": {
+                "name": "Discipline",
+                "value": 10,
+                "progress": 0
+            },
+            "creativity": {
+                "name": "Creativity",
+                "value": 10,
+                "progress": 0
+            }
+        }
+    },
+    "habits": [
+        {
+            "name": "фывфы",
+            "stat_key": "physique",
+            "reward": 20,
+            "last_completed_date": "2026-06-05"
+        }
+    ]
+}

@@ -11,6 +11,15 @@ class HabitService:
     def get_habits(self):
         return self.habits
 
+    def get_sorted_habits(self):
+        return sorted(
+            self.habits,
+            key=lambda habit: (
+                self.is_completed_today(habit),
+                -habit.reward
+            )
+        )
+
     def remove_habit(self, habit_name):
         self.habits = [
             habit for habit in self.habits

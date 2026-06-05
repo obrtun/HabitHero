@@ -157,7 +157,7 @@ class MainWindow:
         for widget in self.habits_list_frame.winfo_children():
             widget.destroy()
 
-        for habit in self.habit_service.get_habits():
+        for habit in self.habit_service.get_sorted_habits():
             habit_row = tk.Frame(self.habits_list_frame)
             habit_row.pack(fill="x", pady=5)
 
